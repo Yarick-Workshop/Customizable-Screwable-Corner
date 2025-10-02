@@ -15,5 +15,15 @@ module chamfered_rectangle_2D(width=20, height=20, chamfer_size=5)
     polygon(points = points);
 }
 
+module chamfered_rectangle_3D(width=20, height=20, thickness=10, chamfer_size=5)
+{
+    linear_extrude(height = height)
+    {
+        chamfered_rectangle_2D(width = width, height = thickness, chamfer_size = chamfer_size);
+    }
+}
+
 // Examples
-chamfered_rectangle_2D(width=50, height=10, chamfer_size=5);
+// TODO, fix parameters values
+// TODO, add customizing parameters
+chamfered_rectangle_3D(width=45, height=110, thickness=10, chamfer_size=5);
