@@ -1,6 +1,6 @@
 //TODO, build all the modules inside of the main one
 
-module chamfered_rectangle_2D(width=20, height=20, chamfer_size=5)
+module chamfered_rectangle_2D(width, height, chamfer_size)
 {
     assert(chamfer_size <= min(width, height), "Chamfer size must not exceed the smaller dimension");
     
@@ -17,7 +17,7 @@ module chamfered_rectangle_2D(width=20, height=20, chamfer_size=5)
     polygon(points = points);
 }
 
-module chamfered_rectangle_3D(width=20, height=20, thickness=10, chamfer_size=5)
+module chamfered_rectangle_3D(width, height, thickness, chamfer_size)
 {
     linear_extrude(height = height)
     {
@@ -25,7 +25,7 @@ module chamfered_rectangle_3D(width=20, height=20, thickness=10, chamfer_size=5)
     }
 }
 
-module countersunk_hole(screw_diameter=3.5, head_diameter=7, head_depth=3, hole_depth=20)
+module countersunk_hole(screw_diameter, head_diameter, head_depth, hole_depth)
 {
     // Main screw hole
     cylinder(h=hole_depth, d=screw_diameter, center=false);
@@ -61,9 +61,9 @@ module half_corner(width, height, thickness, chamfer_size,
     }
 }
 
-module corner(width=20, height=20, thickness=10, chamfer_size=5, 
-              screw_diameter=3.5, head_diameter=7, head_depth=3,
-              screw_hole_spacing=15, screw_edge_distance=10)
+module corner(width, height, thickness, chamfer_size, 
+              screw_diameter, head_diameter, head_depth,
+              screw_hole_spacing, screw_edge_distance)
 {
     // First half corner
     half_corner(width=width, height=height, thickness=thickness, chamfer_size=chamfer_size,
