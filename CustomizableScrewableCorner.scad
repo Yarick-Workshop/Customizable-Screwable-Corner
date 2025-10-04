@@ -7,7 +7,8 @@ screw_diameter = 3.5;
 head_diameter = 7;
 head_depth = 3;
 screw_holes_number = 3;
-screw_edge_distance = 10;
+screw_edge_distance = 15;
+screw_hole_offset_percent = 60;
 
 //TODO, build all the modules inside of the main one
 
@@ -58,7 +59,8 @@ module corner()
             for(i = [0 : screw_holes_number - 1])
             {
                 z = screw_edge_distance + (i * (height - 2 * screw_edge_distance) / (screw_holes_number - 1));
-                translate([width * 0.5, thickness, z])
+                x_offset = thickness + (screw_hole_offset_percent / 100) * (width - chamfer_size - thickness);
+                translate([x_offset, thickness, z])
                     rotate([90, 0, 0])
                         countersunk_hole();
             }
