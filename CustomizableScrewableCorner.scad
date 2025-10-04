@@ -6,7 +6,7 @@ chamfer_size = 5;
 screw_diameter = 3.5;
 head_diameter = 7;
 head_depth = 3;
-screw_hole_spacing = 15;
+screw_holes_number = 3;
 screw_edge_distance = 10;
 
 //TODO, build all the modules inside of the main one
@@ -55,9 +55,10 @@ module corner()
             chamfered_rectangle_3D(width=width, height=height, thickness=thickness, chamfer_size=chamfer_size);
             
             // Screw holes
-            for(i = [screw_edge_distance : screw_hole_spacing : width - screw_edge_distance])
+            for(i = [0 : screw_holes_number - 1])
             {
-                translate([i, thickness, -0.01])
+                z = screw_edge_distance + (i * (height - 2 * screw_edge_distance) / (screw_holes_number - 1));
+                translate([width * 0.5, thickness, z])
                     rotate([90, 0, 0])
                         countersunk_hole();
             }
