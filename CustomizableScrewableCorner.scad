@@ -18,33 +18,6 @@ screw_hole_offset_percent = 65; // [0:0.1:100]
 screw_offset_chess_order = true;
 
 
-//TODO, build all the modules inside of the main one
-
-module chamfered_rectangle_2D(width, height, chamfer_size)
-{
-    assert(chamfer_size <= min(width, height), "Chamfer size must not exceed the smaller dimension");
-    
-    points = 
-    [
-        [0, 0],                    // bottom-left
-        [width, 0],                // bottom-right
-        [width, height - chamfer_size], // top-right (chamfered bottom)
-        [width - chamfer_size, height], // top-right (chamfered top)
-        [0, height]                // top-left
-    ];
-    
-    // Create the polygon
-    polygon(points = points);
-}
-
-module chamfered_rectangle_3D(width, height, thickness, chamfer_size)
-{
-    linear_extrude(height = height)
-    {
-        chamfered_rectangle_2D(width = width, height = thickness, chamfer_size = chamfer_size);
-    }
-}
-
 module countersunk_hole()
 {
     // Main screw hole
@@ -59,6 +32,30 @@ module corner()
 {
     module half_corner()
     {
+        module chamfered_rectangle_3D(width, height, thickness, chamfer_size)
+        {
+            module chamfered_rectangle_2D(width, height, chamfer_size)
+            {
+                assert(chamfer_size <= min(width, height), "Chamfer size must not exceed the smaller dimension");
+                
+                points = 
+                [
+                    [0, 0],                    // bottom-left
+                    [width, 0],                // bottom-right
+                    [width, height - chamfer_size], // top-right (chamfered bottom)
+                    [width - chamfer_size, height], // top-right (chamfered top)
+                    [0, height]                // top-left
+                ];
+                
+                // Create the polygon
+                polygon(points = points);
+            }
+
+            linear_extrude(height = height)
+            {
+                chamfered_rectangle_2D(width = width, height = thickness, chamfer_size = chamfer_size);
+            }
+        }
         difference()
         {
             chamfered_rectangle_3D(width=width, height=height, thickness=thickness, chamfer_size=chamfer_size);
