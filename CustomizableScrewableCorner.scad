@@ -1,17 +1,22 @@
-// Customization variables
+/* [Generic] */
 $fn=360;
+rendering_mode = "Production"; // [Production, Preview]
+
+/* [Corner body] */
 width = 45;
 height = 110;
 thickness = 10; 
 chamfer_size = 5;
+
+/* [Screw holes] */
 screw_diameter = 3.5;
-head_diameter = 7;
-head_depth = 3;
+screw_head_diameter = 7;
+screw_head_depth = 3;
 screw_holes_number = 3;
 screw_edge_distance = 12;
 screw_hole_offset_percent = 65; // [0:0.1:100]
 screw_offset_chess_order = true;
-rendering_mode = "Production"; // [Production, Preview]
+
 
 //TODO, build all the modules inside of the main one
 
@@ -47,7 +52,7 @@ module countersunk_hole()
     
     // Countersunk head
     translate([0, 0, -0.01])
-        cylinder(h=head_depth + 0.01, d1=head_diameter, d2=screw_diameter, center=false);
+        cylinder(h=screw_head_depth + 0.01, d1=screw_head_diameter, d2=screw_diameter, center=false);
 }
 
 module corner()
@@ -84,9 +89,6 @@ module corner()
             half_corner();
 }
 
-// Examples
-
-// Rendering logic
 if (rendering_mode == "Production")
 {
     corner();
