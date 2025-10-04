@@ -9,7 +9,7 @@ head_diameter = 7;
 head_depth = 3;
 screw_holes_number = 3;
 screw_edge_distance = 12;
-screw_hole_offset_percent = 65;
+screw_hole_offset_percent = 65; // [0:0.1:100]
 screw_offset_chess_order = true;
 rendering_mode = "Production"; // [Production, Preview]
 
