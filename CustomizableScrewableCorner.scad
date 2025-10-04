@@ -17,15 +17,17 @@ screw_edge_distance = 12;
 screw_hole_offset_percent = 65; // [0:0.1:100]
 screw_offset_chess_order = true;
 
+/* [Hidden] */
+epsilon = 0.02;
 
 module countersunk_hole()
 {
     // Main screw hole
-    cylinder(h=thickness + 0.02, d=screw_diameter, center=false);
+    cylinder(h=thickness + epsilon, d=screw_diameter, center=false);
     
     // Countersunk head
-    translate([0, 0, -0.01])
-        cylinder(h=screw_head_depth + 0.01, d1=screw_head_diameter, d2=screw_diameter, center=false);
+    translate([0, 0, -epsilon * 0.5])
+        cylinder(h=screw_head_depth + epsilon * 0.5, d1=screw_head_diameter, d2=screw_diameter, center=false);
 }
 
 module corner()
@@ -56,6 +58,7 @@ module corner()
                 chamfered_rectangle_2D(width = width, height = thickness, chamfer_size = chamfer_size);
             }
         }
+
         difference()
         {
             chamfered_rectangle_3D(width=width, height=height, thickness=thickness, chamfer_size=chamfer_size);
