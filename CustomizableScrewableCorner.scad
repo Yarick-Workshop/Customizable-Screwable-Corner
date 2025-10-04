@@ -1,14 +1,16 @@
 // Customization variables
+$fn=360;
 width = 45;
 height = 110;
-thickness = 10;
+thickness = 10; 
 chamfer_size = 5;
 screw_diameter = 3.5;
 head_diameter = 7;
 head_depth = 3;
 screw_holes_number = 3;
-screw_edge_distance = 15;
-screw_hole_offset_percent = 60;
+screw_edge_distance = 12;
+screw_hole_offset_percent = 65;
+screw_offset_chess_order = true;
 
 //TODO, build all the modules inside of the main one
 
@@ -59,7 +61,12 @@ module corner()
             for(i = [0 : screw_holes_number - 1])
             {
                 z = screw_edge_distance + (i * (height - 2 * screw_edge_distance) / (screw_holes_number - 1));
-                x_offset = thickness + (screw_hole_offset_percent / 100) * (width - chamfer_size - thickness);
+
+                local_offset_percent = screw_offset_chess_order ? 
+                    ((i % 2 == 0 ? screw_hole_offset_percent : (100 - screw_hole_offset_percent))) : 
+                    screw_hole_offset_percent; 
+                
+                x_offset = thickness + (local_offset_percent / 100) * (width - chamfer_size - thickness);
                 translate([x_offset, thickness, z])
                     rotate([90, 0, 0])
                         countersunk_hole();
