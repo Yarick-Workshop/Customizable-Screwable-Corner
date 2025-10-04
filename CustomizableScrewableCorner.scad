@@ -11,6 +11,7 @@ screw_holes_number = 3;
 screw_edge_distance = 12;
 screw_hole_offset_percent = 65;
 screw_offset_chess_order = true;
+rendering_mode = "Production"; // [Production, Preview]
 
 //TODO, build all the modules inside of the main one
 
@@ -85,8 +86,30 @@ module corner()
 
 // Examples
 
-// Example of individual chamfered rectangle
-// chamfered_rectangle_3D(width=45, height=110, thickness=10, chamfer_size=5);
-
-// Example of corner module with screw holes
-corner();
+// Rendering logic
+if (rendering_mode == "Production")
+{
+    corner();
+    
+    // Test block
+    translate([width + 20, 0, 0])
+    {
+        difference()
+        {
+            translate([0, 0, thickness / 2]) 
+                cube([20, 20, thickness], center=true);
+            
+            translate([0, 0, thickness]) 
+            mirror([0, 0, 1])
+                countersunk_hole();
+        }
+    }
+}
+else if (rendering_mode == "Preview")
+{
+    corner();
+}
+else
+{
+    assert(false, str("Invalid rendering_mode: ", rendering_mode, ". Use 'Production' or 'Preview'"));
+}
