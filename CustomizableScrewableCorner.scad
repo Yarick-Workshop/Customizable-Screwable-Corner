@@ -7,6 +7,8 @@ width = 45;
 height = 110;
 thickness = 10; 
 chamfer_size = 5;
+inner_chamfer = true;
+
 
 /* [Screw holes] */
 screw_diameter = 3.5;
@@ -80,6 +82,16 @@ module corner()
         }
     }
 
+    module in_corner_chamfer()
+    {
+        points = [[0, 0], [chamfer_size, 0], [0, chamfer_size]];
+                
+        linear_extrude(height = height)
+        {
+            polygon(points = points);
+        }
+    }
+
     // First half corner
     half_corner();
     
@@ -87,6 +99,12 @@ module corner()
     rotate([0, 0, -90])
         mirror([1, 0, 0])
             half_corner();
+    
+    if (inner_chamfer)
+    {
+        translate([thickness, thickness])
+            in_corner_chamfer();
+    }
 }
 
 if (rendering_mode == "Production")
