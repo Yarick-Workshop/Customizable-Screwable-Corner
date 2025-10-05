@@ -8,6 +8,7 @@ height = 110;
 thickness = 10; 
 chamfer_size = 5;
 inner_chamfer = true;
+foot = true;
 
 
 /* [Screw holes] */
@@ -34,28 +35,28 @@ module countersunk_hole()
 
 module corner()
 {
-    module half_corner()
+    module chamfered_rectangle_2D(width, height, chamfer_size)
     {
-        module chamfered_rectangle_3D(width, height, thickness, chamfer_size)
-        {
-            module chamfered_rectangle_2D(width, height, chamfer_size)
-            {
-                assert(chamfer_size <= min(width, height), "Chamfer size must not exceed the smaller dimension");
-                
-                points = 
-                [
-                    [0, 0],                    // bottom-left
-                    [width, 0],                // bottom-right
-                    [width, height - chamfer_size], // top-right (chamfered bottom)
-                    [width - chamfer_size, height], // top-right (chamfered top)
-                    [0, height]                // top-left
-                ];
-                
-                // Create the polygon
-                polygon(points = points);
-            }
+        assert(chamfer_size <= min(width, height), "Chamfer size must not exceed the smaller dimension");
+        
+        points = 
+        [
+            [0, 0],                    // bottom-left
+            [width, 0],                // bottom-right
+            [width, height - chamfer_size], // top-right (chamfered bottom)
+            [width - chamfer_size, height], // top-right (chamfered top)
+            [0, height]                // top-left
+        ];
+        
+        // Create the polygon
+        polygon(points = points);
+    }
 
-            linear_extrude(height = height)
+    module half_corner(width, height, thickness, chamfer_size, center = false)
+    {
+        module chamfered_rectangle_3D(width, height, thickness, chamfer_size, center)
+        {
+            linear_extrude(height = height, center = center)
             {
                 chamfered_rectangle_2D(width = width, height = thickness, chamfer_size = chamfer_size);
             }
@@ -68,7 +69,8 @@ module corner()
             // Screw holes
             for(i = [0 : screw_holes_number - 1])
             {
-                z = screw_edge_distance + (i * (height - 2 * screw_edge_distance) / (screw_holes_number - 1));
+                foot_height = foot ? thickness : 0;
+                z = screw_edge_distance + foot_height + (i * (height - 2 * screw_edge_distance - foot_height) / (screw_holes_number - 1));
 
                 local_offset_percent = screw_offset_chess_order ? 
                     ((i % 2 == 0 ? screw_hole_offset_percent : (100 - screw_hole_offset_percent))) : 
@@ -92,18 +94,46 @@ module corner()
         }
     }
 
+    module foot()
+    {
+        offset_x_y = thickness - chamfer_size;
+        local_width = width - chamfer_size;
+
+        difference()
+        {
+            translate([offset_x_y, offset_x_y])        
+                rotate_extrude(angle = 90)
+                {
+                    chamfered_rectangle_2D(width = local_width, height = thickness, chamfer_size = chamfer_size);
+                }
+            // TODO, generalize offset calculation and fix it 
+            x_offset = thickness + (screw_hole_offset_percent / 100) * (width - chamfer_size - thickness);
+            rotate([0, 0, 45])
+                translate([x_offset, 0, thickness])
+                    rotate([180, 0, 0])
+                        countersunk_hole();
+        }
+    }
+
     // First half corner
-    half_corner();
+    half_corner(width, height, thickness, chamfer_size);
     
     // Second half corner mirrored by x and rotated -90 degrees
     rotate([0, 0, -90])
         mirror([1, 0, 0])
-            half_corner();
-    
+            half_corner(width, height, thickness, chamfer_size);
+
+    // Inner chamfer    
     if (inner_chamfer)
     {
         translate([thickness, thickness])
             in_corner_chamfer();
+    }
+
+    // Foot
+    if (foot)
+    {
+        foot();
     }
 }
 
