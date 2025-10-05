@@ -16,7 +16,8 @@ screw_diameter = 3.5;
 screw_head_diameter = 7;
 screw_head_depth = 3;
 screw_holes_number = 3;
-screw_edge_distance = 12;
+screw_edge_distance_top = 12;
+screw_edge_distance_bottom = 12;
 screw_hole_offset_percent = 65; // [0:0.1:100]
 screw_offset_chess_order = true;
 
@@ -70,7 +71,7 @@ module corner()
             for(i = [0 : screw_holes_number - 1])
             {
                 foot_height = foot ? thickness : 0;
-                z = screw_edge_distance + foot_height + (i * (height - 2 * screw_edge_distance - foot_height) / (screw_holes_number - 1));
+                z = screw_edge_distance_bottom + foot_height + (i * (height - screw_edge_distance_top - screw_edge_distance_bottom - foot_height) / (screw_holes_number - 1));
 
                 local_offset_percent = screw_offset_chess_order ? 
                     ((i % 2 == 0 ? screw_hole_offset_percent : (100 - screw_hole_offset_percent))) : 
