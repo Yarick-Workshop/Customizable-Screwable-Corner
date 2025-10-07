@@ -5,11 +5,11 @@ rendering_mode = "Production"; // [Production, Preview]
 /* [Corner body] */
 width = 45;
 height = 110;
-thickness = 10; 
-chamfer_size = 5;
+thickness = 7; 
+chamfer_size = 3;
 inner_chamfer = true;
 foot = true;
-foot_inner_chamfers = false;
+foot_inner_chamfers = true;
 
 
 /* [Screw holes] */
@@ -112,7 +112,7 @@ module corner()
     module foot()
     {
         offset_x_y = thickness - chamfer_size;
-        local_width = width - chamfer_size;
+        local_width = width - thickness + chamfer_size;
 
         internal_chamfer_size = local_width - sqrt(chamfer_size * chamfer_size + (local_width - chamfer_size) * (local_width - chamfer_size));
 
