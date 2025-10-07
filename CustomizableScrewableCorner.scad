@@ -116,15 +116,15 @@ module corner()
 
         internal_chamfer_size = local_width - sqrt(chamfer_size * chamfer_size + (local_width - chamfer_size) * (local_width - chamfer_size));
 
+        translate([offset_x_y, offset_x_y])  
         difference()
-        {
-            translate([offset_x_y, offset_x_y])        
-                rotate_extrude(angle = 90)
-                {
-                    chamfered_rectangle_2D(width = local_width, height = thickness, chamfer_size = internal_chamfer_size);
-                }
+        {     
+            rotate_extrude(angle = 90)
+            {
+                chamfered_rectangle_2D(width = local_width, height = thickness, chamfer_size = internal_chamfer_size);
+            }
             // TODO, generalize offset calculation and fix it 
-            x_offset = thickness + (screw_hole_offset_percent / 100) * (width - chamfer_size - thickness);
+            x_offset = thickness - chamfer_size + (screw_hole_offset_percent / 100) * (width - chamfer_size - thickness);
             rotate([0, 0, 45])
                 translate([x_offset, 0, thickness])
                     rotate([180, 0, 0])
