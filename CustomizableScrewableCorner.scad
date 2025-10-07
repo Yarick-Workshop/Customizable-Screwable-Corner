@@ -9,6 +9,7 @@ thickness = 10;
 chamfer_size = 5;
 inner_chamfer = true;
 foot = true;
+foot_inner_chamfers = false;
 
 
 /* [Screw holes] */
@@ -85,13 +86,26 @@ module corner()
         }
     }
 
-    module in_corner_chamfer()
+    module in_corner_chamfer(chamfer_height, spike = true)
     {
         points = [[0, 0], [chamfer_size, 0], [0, chamfer_size]];
-                
-        linear_extrude(height = height)
+        
+        difference()
         {
-            polygon(points = points);
+            linear_extrude(height = chamfer_height)
+            {
+                polygon(points = points);
+            }
+            if (spike)
+            {
+                // Create 45-degree chamfer at the top
+                translate([0, 0, chamfer_height])
+                {
+                    rotate([0, 45, 45])
+                        translate([0, 0, chamfer_size * 2])
+                            cube([chamfer_size * 2, chamfer_size * 4, chamfer_size * 4], center=true);
+                }
+            }
         }
     }
 
@@ -130,7 +144,23 @@ module corner()
     if (inner_chamfer)
     {
         translate([thickness, thickness])
-            in_corner_chamfer();
+            in_corner_chamfer(height, spike = false);
+    }
+
+    // 2 chamfers above foot
+    if (foot && foot_inner_chamfers)
+    {
+        // First chamfer
+        translate([thickness, thickness, thickness])
+            rotate([-90, 0])
+                rotate([0, 0, -90])
+                    in_corner_chamfer(width - chamfer_size - thickness);
+        
+        // Second chamfer
+        translate([thickness, thickness, thickness])
+            rotate([0, 90, 0])
+                rotate([0, 0, 90])
+                    in_corner_chamfer(width - chamfer_size - thickness);
     }
 
     // Foot
