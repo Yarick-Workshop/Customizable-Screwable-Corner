@@ -114,21 +114,57 @@ module corner()
         offset_x_y = thickness - chamfer_size;
         local_width = width - thickness + chamfer_size;
 
+        //TODO, fix artefacts (see in the corners)
+
         internal_chamfer_size = local_width - sqrt(chamfer_size * chamfer_size + (local_width - chamfer_size) * (local_width - chamfer_size));
 
-        translate([offset_x_y, offset_x_y])  
-        difference()
-        {     
-            rotate_extrude(angle = 90)
+        translate([offset_x_y, offset_x_y])
+        { //TODO, refactor
+            difference()
+            {     
+                rotate_extrude(angle = 90)
+                {
+                    chamfered_rectangle_2D(width = local_width, height = thickness, chamfer_size = internal_chamfer_size);
+                }
+                // TODO, generalize offset calculation and fix it 
+                x_offset = thickness - chamfer_size + (screw_hole_offset_percent / 100) * (width - chamfer_size - thickness);
+                rotate([0, 0, 45])
+                    translate([x_offset, 0, thickness])
+                        rotate([180, 0, 0])
+                            countersunk_hole();
+            }           
+        }
+
+         // chamfers above the foot
+        if (foot_inner_chamfers)
+        {// todo, FIX THIS!!!
+            inner_foot_radius = local_width - internal_chamfer_size;
+            intersection()
             {
-                chamfered_rectangle_2D(width = local_width, height = thickness, chamfer_size = internal_chamfer_size);
+                translate([thickness, thickness, thickness])
+                    union()
+                    {
+                        // First chamfer
+                        rotate([-90, 0])
+                            rotate([0, 0, -90])
+                                in_corner_chamfer(inner_foot_radius * 2);
+                        
+                        // Second chamfer
+                        rotate([0, 90, 0])
+                                rotate([0, 0, 90])
+                                    in_corner_chamfer(inner_foot_radius * 2);
+                    }
+                
+                union()
+                {
+                    translate([offset_x_y, offset_x_y, thickness])
+                        cylinder(h = inner_foot_radius, r1 = inner_foot_radius, r2 = 0, center = false);
+                    
+                    translate([thickness, thickness, thickness])
+                        linear_extrude(height = height)
+                            polygon(points = [[0, 0], [width - chamfer_size - thickness, 0], [0, width - chamfer_size - thickness]]);
+                }
             }
-            // TODO, generalize offset calculation and fix it 
-            x_offset = thickness - chamfer_size + (screw_hole_offset_percent / 100) * (width - chamfer_size - thickness);
-            rotate([0, 0, 45])
-                translate([x_offset, 0, thickness])
-                    rotate([180, 0, 0])
-                        countersunk_hole();
         }
     }
 
@@ -145,22 +181,6 @@ module corner()
     {
         translate([thickness, thickness])
             in_corner_chamfer(height, spike = false);
-    }
-
-    // 2 chamfers above foot
-    if (foot && foot_inner_chamfers)
-    {
-        // First chamfer
-        translate([thickness, thickness, thickness])
-            rotate([-90, 0])
-                rotate([0, 0, -90])
-                    in_corner_chamfer(width - chamfer_size - thickness);
-        
-        // Second chamfer
-        translate([thickness, thickness, thickness])
-            rotate([0, 90, 0])
-                rotate([0, 0, 90])
-                    in_corner_chamfer(width - chamfer_size - thickness);
     }
 
     // Foot
