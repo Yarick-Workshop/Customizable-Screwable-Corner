@@ -114,12 +114,10 @@ module corner()
         offset_x_y = thickness - chamfer_size;
         local_width = width - thickness + chamfer_size;
 
-        //TODO, fix artefacts (see in the corners)
-
         internal_chamfer_size = local_width - sqrt(chamfer_size * chamfer_size + (local_width - chamfer_size) * (local_width - chamfer_size));
 
         translate([offset_x_y, offset_x_y])
-        { //TODO, refactor
+        {
             difference()
             {     
                 rotate_extrude(angle = 90)
@@ -135,13 +133,13 @@ module corner()
             }           
         }
 
-         // chamfers above the foot
+        // chamfers above the foot
         if (foot_inner_chamfers)
-        {// todo, FIX THIS!!!
+        {
             inner_foot_radius = local_width - internal_chamfer_size;
-            intersection()
-            {
-                translate([thickness, thickness, thickness])
+            translate([thickness, thickness, thickness])
+                intersection()
+                {
                     union()
                     {
                         // First chamfer
@@ -154,17 +152,15 @@ module corner()
                                 rotate([0, 0, 90])
                                     in_corner_chamfer(inner_foot_radius * 2);
                     }
-                
-                union()
-                {
-                    translate([offset_x_y, offset_x_y, thickness])
-                        cylinder(h = inner_foot_radius, r1 = inner_foot_radius, r2 = 0, center = false);
-                    
-                    translate([thickness, thickness, thickness])
+                    union()
+                    {
+                        translate([- chamfer_size, -chamfer_size, 0])
+                            cylinder(h = inner_foot_radius, r1 = inner_foot_radius, r2 = 0, center = false);
+                        
                         linear_extrude(height = height)
                             polygon(points = [[0, 0], [width - chamfer_size - thickness, 0], [0, width - chamfer_size - thickness]]);
+                    }
                 }
-            }
         }
     }
 
